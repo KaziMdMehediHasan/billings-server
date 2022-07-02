@@ -38,35 +38,15 @@ async function run() {
         /*-------------GET API--------------*/
         app.post('/billing-list', async (req, res) => {
             const filter = req.body;
-            // console.log(req.body);
-            let cursor;
-            let result;
-            if (!filter.fullname && !filter.email && !filter.phone && !filter.paidamount) {
-                cursor = billingsCollection.find({});
-            } else if (!filter.fullname && !filter.email && !filter.phone) {
-                cursor = billingsCollection.find({ paidamount: filter.paidamount });
-            } else if (!filter.email && !filter.phone && !filter.paidamount) {
-                cursor = billingsCollection.find({ fullname: filter.fullname });
-            } else if (!filter.fullname && !filter.phone && !filter.paidamount) {
-                cursor = billingsCollection.find({ email: filter.email });
-            } else if (!filter.fullname && !filter.email && !filter.paidamount) {
-                cursor = billingsCollection.find({ phone: filter.phone });
-            } else {
-                cursor = billingsCollection.find({ fullname: filter.fullname, email: filter.email, phone: filter.phone });
+            for (const key in filter) {
+                if (filter[key] === "") {
+                    delete filter[key];
+                }
             }
-            if (!cursor) {
-                result = [];
-            } else {
-                result = await cursor.toArray();
-            }
+            const cursor = billingsCollection.find(filter);
+            const result = await cursor.toArray();
             res.status(200).json(result);
         })
-        //   get product by id
-        // app.get('/billing-list', async (req, res) => {
-        //     const filter = req.body;
-        //     const cursor = 
-        // })
-
 
         // get order by user email
 
